@@ -9,6 +9,7 @@
 import mapSdk from '../utils/MapSdk';
 
 export default {
+    name: 'CesiumMap',
     data() {
         return {};
     },

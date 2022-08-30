@@ -1,3 +1,5 @@
+import state from '../store/state';
+
 const { Cesium } = window;
 
 class MapSdk extends EventTarget {
@@ -6,6 +8,7 @@ class MapSdk extends EventTarget {
         this.mapCenterLongitude = 107.34145981478143;
         this.mapCenterLatitude = 36.26907364872889;
         this.viewer = null;
+        this.state = state;
         window.mapSdk = this;
     }
 

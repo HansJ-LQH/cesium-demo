@@ -2,19 +2,15 @@
     <div class="home">
         <CesiumMap />
         <CesiumTools />
+        <TiltPhotography />
     </div>
 </template>
 
 <script>
-import CesiumMap from '../components/CesiumMap.vue';
-import CesiumTools from '../components/CesiumTools.vue';
 
 export default {
     name: 'Home',
-    components: {
-        CesiumMap,
-        CesiumTools,
-    },
+    components: {},
 };
 </script>
 <style lang="scss" scoped></style>

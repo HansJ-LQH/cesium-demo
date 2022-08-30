@@ -6,6 +6,12 @@
         <div class="cesium-tools-btn" @click="changeZoomLevel(1)">+</div>
         <div class="cesium-tools-btn">{{ currentLevel }}</div>
         <div class="cesium-tools-btn" @click="changeZoomLevel(-1)">-</div>
+        <div
+            :class="`cesium-tools-btn ${tiltPhotographyVisibility ? 'cesium-tools-btn-hover' : ''}`"
+            @click="changeTiltPhotographyVisibility"
+        >
+            倾
+        </div>
     </div>
 </template>
 
@@ -13,15 +19,21 @@
 import mapSdk from '../utils/MapSdk';
 
 export default {
+    name: 'CesiumTools',
     data() {
         return {
             currentLevel: 2,
+            tiltPhotographyVisibility: false,
         };
     },
 
     components: {},
 
     methods: {
+        changeTiltPhotographyVisibility() {
+            this.tiltPhotographyVisibility = !this.tiltPhotographyVisibility;
+            this.$store.commit('changeTiltPhotographyVisibility', this.tiltPhotographyVisibility);
+        },
         resetZoomView() {
             mapSdk.resetZoomView();
         },
@@ -64,6 +76,13 @@ export default {
         line-height: 30px;
         text-align: center;
         cursor: pointer;
+        user-select: none;
+    }
+    .cesium-tools-btn:hover {
+        background-color: #e6e6e6;
+    }
+    .cesium-tools-btn-hover {
+        background-color: #e6e6e6;
     }
 }
 </style>
