@@ -1,4 +1,5 @@
 import state from '../store/state';
+import MapDraw from './mapDraw/MapDraw';
 
 const { Cesium } = window;
 
@@ -9,6 +10,7 @@ class MapSdk extends EventTarget {
         this.mapCenterLatitude = 36.26907364872889;
         this.viewer = null;
         this.state = state;
+        this.mapDraw = null;
         window.mapSdk = this;
     }
 
@@ -35,6 +37,8 @@ class MapSdk extends EventTarget {
         // 去除版权信息
         // eslint-disable-next-line no-underscore-dangle
         this.viewer._cesiumWidget._creditContainer.style.display = 'none';
+        window.viewer = this.viewer;
+        this.mapDraw = new MapDraw({ viewer: this.viewer });
         this.resetZoomView();
     }
 

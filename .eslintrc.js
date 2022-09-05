@@ -16,7 +16,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module',
     },
-    plugins: ['vue', 'import'],
+    plugins: ['vue', 'import', 'js'],
     rules: {
         'linebreak-style': [0, 'error', 'windows'],
         'no-console': 'off',

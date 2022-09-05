@@ -2,6 +2,7 @@
     <div class="home">
         <CesiumMap />
         <CesiumTools />
+        <DrawTools />
         <TiltPhotography />
     </div>
 </template>
