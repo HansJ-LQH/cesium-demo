@@ -6,5 +6,5 @@ export const getCesiumLngLag = p => {
     const lat = Cesium.Math.toDegrees(cartographic.latitude);
     const lng = Cesium.Math.toDegrees(cartographic.longitude);
     const height = window.viewer.camera.positionCartographic.height / 1000;
-    return { lng, lat, height };
+    return { lng: Number(lng), lat: Number(lat), height: Number(height) };
 };

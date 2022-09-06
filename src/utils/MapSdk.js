@@ -6,8 +6,10 @@ const { Cesium } = window;
 class MapSdk extends EventTarget {
     constructor() {
         super();
-        this.mapCenterLongitude = 107.34145981478143;
-        this.mapCenterLatitude = 36.26907364872889;
+        // this.mapCenterLongitude = 107.34145981478143;
+        // this.mapCenterLatitude = 36.26907364872889;
+        this.mapCenterLongitude = 114.17944310326004;
+        this.mapCenterLatitude = 22.65386345002168;
         this.viewer = null;
         this.state = state;
         this.mapDraw = null;
@@ -37,6 +39,10 @@ class MapSdk extends EventTarget {
         // 去除版权信息
         // eslint-disable-next-line no-underscore-dangle
         this.viewer._cesiumWidget._creditContainer.style.display = 'none';
+        // 取消实例的双击事件
+        this.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
+            Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
+        );
         window.viewer = this.viewer;
         this.mapDraw = new MapDraw({ viewer: this.viewer });
         this.resetZoomView();
@@ -70,7 +76,7 @@ class MapSdk extends EventTarget {
             longitude: this.mapCenterLongitude,
             latitude: this.mapCenterLatitude,
             duration: 1,
-            height: this.zoomToHeight(2),
+            height: this.zoomToHeight(10),
             heading: 0,
             pitch: -90,
         });

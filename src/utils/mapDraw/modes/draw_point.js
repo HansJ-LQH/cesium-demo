@@ -13,6 +13,7 @@ class DrawPoint extends DrawBase {
             drawStep: [],
             customStyle: {},
         };
+        this.parent = null;
     }
 
     onClick(e) {
@@ -29,7 +30,7 @@ class DrawPoint extends DrawBase {
     }
 
     addFeature(coordinates) {
-        const parent = this.viewer.entities.getOrCreateEntity();
+        this.parent = this.viewer.entities.getOrCreateEntity();
         const point = viewer.entities.add({
             name: 'Draw Point',
             position: Cesium.Cartesian3.fromDegrees(...coordinates),
@@ -39,10 +40,15 @@ class DrawPoint extends DrawBase {
                 outlineColor: Cesium.Color.WHITE,
                 outlineWidth: 2,
             },
-            parent,
+            parent: this.parent,
         });
-        parent.feature = { ...this.feature, coordinates, id: parent.id, step: coordinates };
-        publisher.featureAdded(parent);
+        this.parent.feature = {
+            ...this.feature,
+            coordinates,
+            id: this.parent.id,
+            step: coordinates,
+        };
+        publisher.featureAdded(this.parent);
     }
 
     init() {

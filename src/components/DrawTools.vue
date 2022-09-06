@@ -2,6 +2,8 @@
 <template>
     <div class="draw-tools">
         <div class="draw-tools-btn" @click="changeMode('draw_point')">点</div>
+        <div class="draw-tools-btn" @click="changeMode('draw_line_string')">线</div>
+        <div class="draw-tools-btn" @click="changeMode('draw_polygon')">面</div>
         <div class="draw-tools-btn" @click="removeFeature">删除</div>
     </div>
 </template>
@@ -35,7 +37,7 @@ export default {
             });
             const graphicSelectedEvent = pubsub.subscribe(graphicsSelected, (msg, data) => {
                 console.log('图形选中:', data.feature);
-                this.currentSelectId = data.feature.id;
+                this.currentSelectId = data.feature?.id;
             });
             this.eventList = [graphicDrawnEvent, graphicSelectedEvent];
         },
