@@ -1,4 +1,5 @@
 import state from '../store/state';
+import fixGltf from './fixGltf';
 
 const { Cesium } = window;
 
@@ -10,6 +11,7 @@ class MapSdk extends EventTarget {
         this.viewer = null;
         this.state = state;
         window.mapSdk = this;
+        fixGltf();
     }
 
     init() {
@@ -36,6 +38,80 @@ class MapSdk extends EventTarget {
         // eslint-disable-next-line no-underscore-dangle
         this.viewer._cesiumWidget._creditContainer.style.display = 'none';
         this.resetZoomView();
+        this.initOtherMap();
+    }
+
+    initOtherMap() {
+        // 加载高德影像地图
+        this.viewer.imageryLayers.addImageryProvider(
+            new Cesium.UrlTemplateImageryProvider({
+                url: 'https://webst04.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}',
+            })
+        );
+        // 加载云瑶服务
+        this.viewer.imageryLayers.addImageryProvider(
+            new Cesium.WebMapTileServiceImageryProvider({
+                url: 'https://onemapserver.img.net/OneMapServer/rest/services/2020_2M_05/Transfer',
+            })
+        );
+    }
+
+    add3DTileset(options) {
+        const { url, heightDifference = 0.0 } = options;
+        if (!url) return;
+        if (this.tilesetObj) {
+            this.tilesetObj.destroy();
+            this.tilesetObj = null;
+        }
+        const tilesetObj = this.viewer.scene.primitives.add(
+            new Cesium.Cesium3DTileset({
+                url,
+                maximumMemoryUsage: 100, // 不可设置太高，目标机子空闲内存值以内，防止浏览器过于卡
+                maximumScreenSpaceError: 20, // 用于驱动细节细化级别的最大屏幕空间错误;较高的值可提供更好的性能，但视觉质量较低。
+                maximumNumberOfLoadedTiles: 1000, // 最大加载瓦片个数
+                shadows: false, // 是否显示阴影
+                skipLevelOfDetail: true,
+                baseScreenSpaceError: 1024,
+                skipScreenSpaceErrorFactor: 16,
+                skipLevels: 1,
+                immediatelyLoadDesiredLevelOfDetail: false,
+                loadSiblings: false,
+                cullWithChildrenBounds: true,
+                dynamicScreenSpaceError: true,
+                dynamicScreenSpaceErrorDensity: 0.00278,
+                dynamicScreenSpaceErrorFactor: 4.0,
+                dynamicScreenSpaceErrorHeightFalloff: 0.25,
+            })
+        );
+        this.viewer.scene.primitives.add(tilesetObj);
+        tilesetObj.readyPromise.then(tileset => {
+            const cartographic = Cesium.Cartographic.fromCartesian(tileset.boundingSphere.center);
+            const surface = Cesium.Cartesian3.fromRadians(
+                cartographic.longitude,
+                cartographic.latitude,
+                0.0
+            );
+            const offset = Cesium.Cartesian3.fromRadians(
+                cartographic.longitude,
+                cartographic.latitude,
+                heightDifference // 填高度差值
+            );
+            const translation = Cesium.Cartesian3.subtract(
+                offset,
+                surface,
+                new Cesium.Cartesian3()
+            );
+            tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
+            // this.viewer.scene.primitives.add(tileset);
+            this.viewer.flyTo(tileset);
+            console.log(`HJJ -> MapSdk -> add3DTileset -> translation`, translation);
+            // this.flyToPoint({
+            //     longitude: cartographic.longitude,
+            //     latitude: cartographic.latitude,
+            //     height: 5000,
+            // });
+        });
+        this.tilesetObj = tilesetObj;
     }
 
     flyToPoint(options) {
