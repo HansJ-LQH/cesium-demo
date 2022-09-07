@@ -2,6 +2,7 @@ import Pubsub from 'pubsub-js';
 import eventTopics from './eventTopics';
 import modes from './modes';
 import publisher from './publisher';
+import EventHandler from './eventHandler';
 
 const { Cesium } = window;
 
@@ -13,7 +14,13 @@ class MapDraw {
         this.eventTopics = eventTopics;
         this.features = new Map();
         publisher.init(this);
-        this._initClickEvent();
+        this.eventHandler = new EventHandler(this.viewer);
+    }
+
+    getPositionFeature(position) {
+        const entityList = this.viewer.scene.drillPick(position);
+        if (entityList.length > 0 && entityList[0].id?.parent) return entityList[0].id?.parent;
+        return null;
     }
 
     changeMode(mode, options = {}) {
@@ -30,20 +37,6 @@ class MapDraw {
             this.viewer.entities.removeById(id);
         }
         this.features.delete(id);
-    }
-
-    _onSelectFeature(e) {
-        const entityList = this.viewer.scene.drillPick(e.position);
-        if (entityList.length > 0 && entityList[0].id?.parent)
-            publisher.featureSelected(entityList[0].id?.parent);
-    }
-
-    _initClickEvent() {
-        this.handler = new Cesium.ScreenSpaceEventHandler(this.viewer.scene.canvas);
-        this.handler.setInputAction(
-            this._onSelectFeature.bind(this),
-            Cesium.ScreenSpaceEventType.LEFT_CLICK
-        );
     }
 }
 

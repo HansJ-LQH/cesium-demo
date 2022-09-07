@@ -2,6 +2,7 @@ import { getCesiumLngLag } from '../utils';
 import { modes, geojsonTypes } from '../constants';
 import publisher from '../publisher';
 import DrawBase from './draw_base';
+import { pointStyle } from '../customStyle';
 
 class DrawPoint extends DrawBase {
     constructor(api) {
@@ -14,6 +15,7 @@ class DrawPoint extends DrawBase {
             customStyle: {},
         };
         this.parent = null;
+        this.isEdit = false;
     }
 
     onClick(e) {
@@ -29,24 +31,63 @@ class DrawPoint extends DrawBase {
         this.changeCursor('');
     }
 
+    onMouseDown(e) {
+        const target = this.api.getPositionFeature(e.position);
+        this.isEdit = target?.id === this.parent.id;
+        this.changeMapController(!this.isEdit);
+    }
+
+    onMouseMove(e) {
+        if (!this.isEdit) return;
+        this.changeCursor('move');
+        const ray = this.viewer.camera.getPickRay(e.endPosition);
+        const cartesian = this.viewer.scene.globe.pick(ray, this.viewer.scene);
+        this.parent._children[0].position = cartesian;
+    }
+
+    onMouseUp() {
+        this.isEdit = false;
+        this.changeCursor('');
+    }
+
+    editStart() {
+        if (this.isEdit) return;
+        this.changeMapController(false);
+        this.handler.setInputAction(
+            this.onMouseDown.bind(this),
+            Cesium.ScreenSpaceEventType.LEFT_DOWN
+        );
+        this.handler.setInputAction(
+            this.onMouseMove.bind(this),
+            Cesium.ScreenSpaceEventType.MOUSE_MOVE
+        );
+        this.handler.setInputAction(this.onMouseUp.bind(this), Cesium.ScreenSpaceEventType.LEFT_UP);
+    }
+
+    editStop() {
+        this.isEdit = false;
+        this.changeMapController(true);
+        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_DOWN);
+        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+        this.handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_UP);
+        // 发布一个feature更新事件
+    }
+
     addFeature(coordinates) {
         this.parent = this.viewer.entities.getOrCreateEntity();
-        const point = viewer.entities.add({
+        const point = this.viewer.entities.add({
             name: 'Draw Point',
             position: Cesium.Cartesian3.fromDegrees(...coordinates),
-            point: {
-                pixelSize: 5,
-                color: Cesium.Color.RED,
-                outlineColor: Cesium.Color.WHITE,
-                outlineWidth: 2,
-            },
+            point: pointStyle,
             parent: this.parent,
+            featureType: geojsonTypes.POINT,
         });
         this.parent.feature = {
             ...this.feature,
             coordinates,
             id: this.parent.id,
             step: coordinates,
+            ctx: this,
         };
         publisher.featureAdded(this.parent);
     }

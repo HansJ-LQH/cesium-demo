@@ -4,7 +4,7 @@
         <div class="draw-tools-btn" @click="changeMode('draw_point')">点</div>
         <div class="draw-tools-btn" @click="changeMode('draw_line_string')">线</div>
         <div class="draw-tools-btn" @click="changeMode('draw_polygon')">面</div>
-        <div class="draw-tools-btn" @click="removeFeature">删除</div>
+        <div class="draw-tools-btn" @click="removeFeature">删</div>
     </div>
 </template>
 
