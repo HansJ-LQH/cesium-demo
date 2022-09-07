@@ -51,7 +51,12 @@ class MapSdk extends EventTarget {
         // 加载云瑶服务
         this.viewer.imageryLayers.addImageryProvider(
             new Cesium.WebMapTileServiceImageryProvider({
-                url: 'https://onemapserver.img.net/OneMapServer/rest/services/2020_2M_05/Transfer',
+                // url: 'https://onemapserver.img.net/OneMapServer/rest/services/2020_2M_05/Transfer',
+                url: 'https://onemapserver.img.net/OneMapServer/rest/services/2021_1M_04/Transfer',
+                layer: '',
+                format: 'image/webp',
+                tileMatrixSetID: 'EPSG:3857',
+                style: 'default',
             })
         );
     }
