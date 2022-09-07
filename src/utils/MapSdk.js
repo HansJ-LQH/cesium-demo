@@ -67,7 +67,7 @@ class MapSdk extends EventTarget {
             new Cesium.Cesium3DTileset({
                 url,
                 maximumMemoryUsage: 100, // 不可设置太高，目标机子空闲内存值以内，防止浏览器过于卡
-                maximumScreenSpaceError: 20, // 用于驱动细节细化级别的最大屏幕空间错误;较高的值可提供更好的性能，但视觉质量较低。
+                maximumScreenSpaceError: 500, // 用于驱动细节细化级别的最大屏幕空间错误;较高的值可提供更好的性能，但视觉质量较低。
                 maximumNumberOfLoadedTiles: 1000, // 最大加载瓦片个数
                 shadows: false, // 是否显示阴影
                 skipLevelOfDetail: true,
