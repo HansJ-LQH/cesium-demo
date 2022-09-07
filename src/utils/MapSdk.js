@@ -65,7 +65,7 @@ class MapSdk extends EventTarget {
         const { url, heightDifference = 0.0 } = options;
         if (!url) return;
         if (this.tilesetObj) {
-            this.tilesetObj.destroy();
+            this.viewer.scene.primitives.removeAll();
             this.tilesetObj = null;
         }
         const tilesetObj = this.viewer.scene.primitives.add(
@@ -116,6 +116,7 @@ class MapSdk extends EventTarget {
             //     height: 5000,
             // });
         });
+        this.viewer.scene.primitives._primitives.pop();
         this.tilesetObj = tilesetObj;
     }
 
