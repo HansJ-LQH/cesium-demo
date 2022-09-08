@@ -1,8 +1,16 @@
+import { getCesiumLngLag } from '../utils';
+import publisher from '../publisher';
+import { modes, geojsonTypes } from '../constants';
+
 class DrawBase {
     constructor(api) {
         this.viewer = api.viewer;
         this.api = api;
         this.handler = null;
+        this.getCesiumLngLag = getCesiumLngLag;
+        this.publisher = publisher;
+        this.modes = modes;
+        this.geojsonTypes = geojsonTypes;
     }
 
     changeCursor(type) {

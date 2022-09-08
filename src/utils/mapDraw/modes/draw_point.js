@@ -1,6 +1,3 @@
-import { getCesiumLngLag } from '../utils';
-import { modes, geojsonTypes } from '../constants';
-import publisher from '../publisher';
 import DrawBase from './draw_base';
 import { pointStyle } from '../customStyle';
 
@@ -8,8 +5,8 @@ class DrawPoint extends DrawBase {
     constructor(api) {
         super(api);
         this.feature = {
-            drawType: modes.DRAW_POINT,
-            geojsonType: geojsonTypes.POINT,
+            drawType: this.modes.DRAW_POINT,
+            geojsonType: this.geojsonTypes.POINT,
             coordinates: [],
             drawStep: [],
             customStyle: {},
@@ -20,7 +17,7 @@ class DrawPoint extends DrawBase {
 
     onClick(e) {
         const pick = this.viewer.scene.pick(e.position) || {};
-        const { lng, lat, height } = getCesiumLngLag(e.position);
+        const { lng, lat, height } = this.getCesiumLngLag(e.position);
         pick.position = [Number(lng), Number(lat), Number(height)];
         this.addFeature([pick.position[0], pick.position[1]]);
         this.onStop();
@@ -29,6 +26,7 @@ class DrawPoint extends DrawBase {
     onStop() {
         this.handler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
         this.changeCursor('');
+        this.api.drawState = '';
     }
 
     onMouseDown(e) {
@@ -45,9 +43,11 @@ class DrawPoint extends DrawBase {
         this.parent._children[0].position = cartesian;
     }
 
-    onMouseUp() {
+    onMouseUp(e) {
         this.isEdit = false;
         this.changeCursor('');
+        const { lng, lat } = this.getCesiumLngLag(e.position);
+        this._setCoordinates([lng, lat]);
     }
 
     editStart() {
@@ -80,16 +80,16 @@ class DrawPoint extends DrawBase {
             position: Cesium.Cartesian3.fromDegrees(...coordinates),
             point: pointStyle,
             parent: this.parent,
-            featureType: geojsonTypes.POINT,
+            featureType: this.geojsonTypes.POINT,
         });
         this.parent.feature = {
             ...this.feature,
             coordinates,
             id: this.parent.id,
-            step: coordinates,
+            drawStep: coordinates,
             ctx: this,
         };
-        publisher.featureAdded(this.parent);
+        this.publisher.featureAdded(this.parent);
     }
 
     init() {
@@ -100,9 +100,15 @@ class DrawPoint extends DrawBase {
         );
         this.changeCursor('crosshair');
     }
+
+    _setCoordinates(coordinates) {
+        this.feature.coordinates = coordinates;
+        this.feature.drawStep = coordinates;
+    }
 }
 
 export default function(api) {
     const drawPointHandler = new DrawPoint(api);
     drawPointHandler.init();
+    api.drawState = 'drawing';
 }

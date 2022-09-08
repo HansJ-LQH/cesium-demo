@@ -17,6 +17,14 @@ class MapDraw {
         this.eventHandler = new EventHandler(this.viewer);
     }
 
+    set drawState(val) {
+        this.eventHandler.drawState = val;
+    }
+
+    get drawState() {
+        return this.eventHandler.drawState;
+    }
+
     getPositionFeature(position) {
         const entityList = this.viewer.scene.drillPick(position);
         if (entityList.length > 0 && entityList[0].id?.parent) return entityList[0].id?.parent;
