@@ -6,10 +6,7 @@
         <div class="cesium-tools-btn" @click="changeZoomLevel(1)">+</div>
         <div class="cesium-tools-btn">{{ currentLevel }}</div>
         <div class="cesium-tools-btn" @click="changeZoomLevel(-1)">-</div>
-        <div
-            :class="`cesium-tools-btn ${tiltPhotographyVisibility ? 'cesium-tools-btn-hover' : ''}`"
-            @click="changeTiltPhotographyVisibility"
-        >
+        <div class="cesium-tools-btn " @click="changeTiltPhotographyVisibility">
             倾
         </div>
         <div class="cesium-tools-btn" @click="resetN">北</div>
@@ -17,6 +14,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import mapSdk from '../utils/MapSdk';
 
 export default {
@@ -24,16 +22,22 @@ export default {
     data() {
         return {
             currentLevel: 2,
-            tiltPhotographyVisibility: false,
         };
     },
 
-    components: {},
+    computed: {
+        ...mapState({
+            tiltPhotographyVisibility: state => state.tiltPhotographyVisibility || false,
+        }),
+    },
 
     methods: {
         changeTiltPhotographyVisibility() {
-            this.tiltPhotographyVisibility = !this.tiltPhotographyVisibility;
-            this.$store.commit('changeTiltPhotographyVisibility', this.tiltPhotographyVisibility);
+            console.log(
+                `HJJ -> changeTiltPhotographyVisibility -> !this.tiltPhotographyVisibility`,
+                this.tiltPhotographyVisibility
+            );
+            this.$store.commit('changeTiltPhotographyVisibility', !this.tiltPhotographyVisibility);
         },
         resetN() {
             mapSdk.resetN1();
