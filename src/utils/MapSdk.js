@@ -38,7 +38,7 @@ class MapSdk extends EventTarget {
         // eslint-disable-next-line no-underscore-dangle
         this.viewer._cesiumWidget._creditContainer.style.display = 'none';
         this.resetZoomView();
-        this.initOtherMap();
+        // this.initOtherMap();
     }
 
     initOtherMap() {
@@ -109,7 +109,6 @@ class MapSdk extends EventTarget {
             tileset.modelMatrix = Cesium.Matrix4.fromTranslation(translation);
             // this.viewer.scene.primitives.add(tileset);
             this.viewer.flyTo(tileset);
-            console.log(`HJJ -> MapSdk -> add3DTileset -> translation`, translation);
             // this.flyToPoint({
             //     longitude: cartographic.longitude,
             //     latitude: cartographic.latitude,
@@ -154,6 +153,53 @@ class MapSdk extends EventTarget {
         });
     }
 
+    getCurrentMapCenterPoint() {
+        let result = this.viewer.camera.pickEllipsoid(
+            new Cesium.Cartesian2(
+                this.viewer.canvas.clientWidth / 2,
+                this.viewer.canvas.clientHeight / 2
+            )
+        );
+        if (!result) result = this.viewer.scene.camera.position;
+        const curPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result);
+        return {
+            longitude: (curPosition.longitude * 180) / Math.PI,
+            latitude: (curPosition.latitude * 180) / Math.PI,
+        };
+    }
+
+    resetN1() {
+        const { longitude, latitude } = this.getCurrentMapCenterPoint();
+        const center = Cesium.Cartesian3.fromDegrees(longitude, latitude); // camera视野中心点坐标
+        const heading = Cesium.Math.toRadians(0.0);
+        let { pitch } = this.viewer.scene.camera;
+        // 计算中心点到相机的距离
+        const targetPosition = Cesium.Cartesian3.fromDegrees(longitude, latitude, 0);
+        let distance = Cesium.Cartesian3.distance(
+            targetPosition,
+            this.viewer.scene.camera.position
+        );
+        // 当视角过于贴地时的处理
+        if (pitch > 0) {
+            pitch = -0.1; // 设置最小倾角
+            distance = 500; // 设置最小距离
+        }
+        this.viewer.camera.lookAt(center, new Cesium.HeadingPitchRange(heading, pitch, distance));
+        this.viewer.camera.lookAtTransform(Cesium.Matrix4.IDENTITY);
+    }
+
+    resetN() {
+        this.viewer.scene.camera.flyTo({
+            destination: this.viewer.camera.position,
+            orientation: {
+                heading: Cesium.Math.toRadians(0),
+                pitch: this.viewer.camera.pitch,
+                roll: this.viewer.camera.roll,
+            },
+            duration: 2,
+        });
+    }
+
     resetPitch() {
         const { longitude, latitude } = this.getCurrentMapCenterPoint();
         this.viewer.scene.camera.flyTo({
@@ -180,20 +226,6 @@ class MapSdk extends EventTarget {
             destination: Cesium.Cartesian3.fromDegrees(longitude, latitude, height),
             duration: 1,
         });
-    }
-
-    getCurrentMapCenterPoint() {
-        const result = this.viewer.camera.pickEllipsoid(
-            new Cesium.Cartesian2(
-                this.viewer.canvas.clientWidth / 2,
-                this.viewer.canvas.clientHeight / 2
-            )
-        );
-        const curPosition = Cesium.Ellipsoid.WGS84.cartesianToCartographic(result);
-        return {
-            longitude: (curPosition.longitude * 180) / Math.PI,
-            latitude: (curPosition.latitude * 180) / Math.PI,
-        };
     }
 
     // eslint-disable-next-line class-methods-use-this

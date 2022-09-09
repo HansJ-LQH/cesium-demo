@@ -12,6 +12,7 @@
         >
             倾
         </div>
+        <div class="cesium-tools-btn" @click="resetN">北</div>
     </div>
 </template>
 
@@ -33,6 +34,9 @@ export default {
         changeTiltPhotographyVisibility() {
             this.tiltPhotographyVisibility = !this.tiltPhotographyVisibility;
             this.$store.commit('changeTiltPhotographyVisibility', this.tiltPhotographyVisibility);
+        },
+        resetN() {
+            mapSdk.resetN1();
         },
         resetZoomView() {
             mapSdk.resetZoomView();
