@@ -1,7 +1,3 @@
-const mutations = {
-    changeTiltPhotographyVisibility(state, payload) {
-        state.tiltPhotographyVisibility = payload;
-    },
-};
+const mutations = {};
 
 export default mutations;

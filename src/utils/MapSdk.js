@@ -37,6 +37,8 @@ class MapSdk extends EventTarget {
         // 去除版权信息
         // eslint-disable-next-line no-underscore-dangle
         this.viewer._cesiumWidget._creditContainer.style.display = 'none';
+        // 设定默认Home点
+        Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(80, 22, 130, 55); // 默认定位到中国上空，home定位到中国范围
         this.resetZoomView();
         this.initOtherMap();
     }

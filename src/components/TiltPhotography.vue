@@ -1,10 +1,6 @@
 <!-- 倾斜摄影工具条 -->
 <template>
-    <div
-        class="tilt-photography-tools"
-        v-if="tiltPhotographyVisibility"
-        :class="transformName === 'L2R' ? 'L2R' : 'R2L'"
-    >
+    <div class="tilt-photography-tools" :class="transformName">
         <div class="title">加载倾斜摄影</div>
         <el-table :data="currentList" border class="list-table" style="width: 100%">
             <el-table-column prop="index" label="序号" align="center" width="50"> </el-table-column>
@@ -37,12 +33,16 @@
             @current-change="currentPageIndexChange"
         >
         </el-pagination>
-        <div class="close-btn" @click="closeTiltPhotographyTools">&lt;</div>
+        <div class="close-btn" @click="closeTiltPhotographyTools" v-if="transformName === 'L2R'">
+            &lt;
+        </div>
+        <div class="close-btn" @click="closeTiltPhotographyTools" v-else>
+            &gt;
+        </div>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
 import mapSdk from '../utils/MapSdk';
 
 export default {
@@ -241,9 +241,6 @@ export default {
         };
     },
     computed: {
-        ...mapState({
-            tiltPhotographyVisibility: state => state.tiltPhotographyVisibility || false,
-        }),
         paginationTotal() {
             return this.cesium3DTilesetList.length;
         },
@@ -262,18 +259,7 @@ export default {
             this.currentPageIndex = index - 1;
         },
         closeTiltPhotographyTools() {
-            this.transformName = 'R2L';
-            setTimeout(() => {
-                this.$store.commit('changeTiltPhotographyVisibility', false);
-            }, 1000);
-        },
-    },
-    watch: {
-        tiltPhotographyVisibility(isShow) {
-            if (isShow) {
-                this.currentPageIndex = 0;
-                this.transformName = 'L2R';
-            }
+            this.transformName = this.transformName === 'L2R' ? 'R2L' : 'L2R';
         },
     },
 };
@@ -281,11 +267,12 @@ export default {
 <style lang="scss" scoped>
 .tilt-photography-tools {
     position: fixed;
-    top: 20px;
-    left: 70px;
+    top: 0;
+    left: 0;
     border: 1px solid #d3d3d3;
     background-color: #ffffff;
     padding: 20px;
+    transform: translateX(-100%);
     .list-table {
         margin: 20px 0;
     }
@@ -303,20 +290,19 @@ export default {
     }
 }
 .L2R {
-    transform: translateX(-125%);
-    animation: leftToRight 1s forwards;
+    animation: leftToRight 0.5s forwards;
 }
 
 @keyframes leftToRight {
     0% {
-        transform: translateX(-125%);
+        transform: translateX(-100%);
     }
     100% {
         transform: translateX(0%);
     }
 }
 .R2L {
-    animation: RightToLeft 1s forwards;
+    animation: RightToLeft 0.5s forwards;
 }
 
 @keyframes RightToLeft {
@@ -324,7 +310,7 @@ export default {
         transform: translateX(0%);
     }
     100% {
-        transform: translateX(-125%);
+        transform: translateX(-100%);
     }
 }
 </style>

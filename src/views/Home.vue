@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <CesiumMap />
-        <CesiumTools />
+        <!-- <CesiumTools /> -->
         <TiltPhotography />
     </div>
 </template>

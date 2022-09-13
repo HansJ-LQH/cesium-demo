@@ -1,4 +1,2 @@
-const state = {
-    tiltPhotographyVisibility: false,
-};
+const state = {};
 export default state;

@@ -6,9 +6,6 @@
         <div class="cesium-tools-btn" @click="changeZoomLevel(1)">+</div>
         <div class="cesium-tools-btn">{{ currentLevel }}</div>
         <div class="cesium-tools-btn" @click="changeZoomLevel(-1)">-</div>
-        <div class="cesium-tools-btn " @click="changeTiltPhotographyVisibility">
-            倾
-        </div>
     </div>
 </template>
 
@@ -25,19 +22,9 @@ export default {
     },
 
     computed: {
-        ...mapState({
-            tiltPhotographyVisibility: state => state.tiltPhotographyVisibility || false,
-        }),
     },
 
     methods: {
-        changeTiltPhotographyVisibility() {
-            console.log(
-                `HJJ -> changeTiltPhotographyVisibility -> !this.tiltPhotographyVisibility`,
-                this.tiltPhotographyVisibility
-            );
-            this.$store.commit('changeTiltPhotographyVisibility', !this.tiltPhotographyVisibility);
-        },
         resetZoomView() {
             mapSdk.resetZoomView();
         },
