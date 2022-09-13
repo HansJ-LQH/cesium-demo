@@ -273,6 +273,7 @@ export default {
     background-color: #ffffff;
     padding: 20px;
     transform: translateX(-100%);
+    height: 990px;
     .list-table {
         margin: 20px 0;
     }
