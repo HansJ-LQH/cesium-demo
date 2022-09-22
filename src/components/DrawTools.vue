@@ -31,15 +31,18 @@ export default {
         },
         initDrawPubsub() {
             const { eventTopics, pubsub } = mapSdk.mapDraw;
-            const { drawInformation, graphicsSelected } = eventTopics;
-            const graphicDrawnEvent = pubsub.subscribe(drawInformation, (msg, data) => {
+            const { symbolCreated, symbolSelected, symbolUpdated } = eventTopics;
+            const graphicDrawnEvent = pubsub.subscribe(symbolCreated, (msg, data) => {
                 console.log('图形创建:', data.feature);
             });
-            const graphicSelectedEvent = pubsub.subscribe(graphicsSelected, (msg, data) => {
+            const graphicSelectedEvent = pubsub.subscribe(symbolSelected, (msg, data) => {
                 console.log('图形选中:', data.feature);
                 this.currentSelectId = data.feature?.id;
             });
-            this.eventList = [graphicDrawnEvent, graphicSelectedEvent];
+            const graphicUpdatedEvent = pubsub.subscribe(symbolUpdated, (msg, data) => {
+                console.log('图形更新:', data.feature);
+            });
+            this.eventList = [graphicDrawnEvent, graphicSelectedEvent, graphicUpdatedEvent];
         },
         // 取消订阅事件
         unSubscribePlotEvents() {

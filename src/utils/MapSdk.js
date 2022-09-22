@@ -1,5 +1,6 @@
 import state from '../store/state';
-import MapDraw from './mapDraw/MapDraw';
+// import MapDraw from './mapDraw/MapDraw';
+import MapDraw from '../cesium-draw/index';
 
 const { Cesium } = window;
 
