@@ -11,32 +11,27 @@ class ModeBase {
         this.constants = Constants;
         this.customStyle = customStyle;
         this.symbolPublisher = symbolPublisher;
+        this.currentVertexPosition = 0;
+        this.drawStep = [];
         this.onSetup();
     }
 
-    onSetup() {
-    }
+    onSetup() {}
 
-    onClick(e) {
-    }
+    onClick(e) {}
 
-    onMouseDown(e) {
-    }
+    onMouseDown(e) {}
 
-    onMouseMove(e) {
-    }
+    onMouseMove(e) {}
 
-    onMouseUp(e) {
-    }
+    onMouseUp(e) {}
 
-    onRightClick(e) {
-    }
+    onRightClick(e) {}
 
-    onDoubleClick(e) {
-    }
+    onDoubleClick(e) {}
 
     onStop() {
-        this.changeCursor('');
+        this.changeCursor('default');
         this.api.changeMode('simple_select');
     }
 
@@ -51,6 +46,37 @@ class ModeBase {
     mapControllerEnable(isMove) {
         this.viewer.scene.screenSpaceCameraController.enableRotate = isMove;
         this.viewer.scene.screenSpaceCameraController.enableZoom = isMove;
+    }
+
+    addPoint(coordinates) {
+        this.viewer.entities.add({
+            name: 'Draw Point',
+            type: 'cesium-draw',
+            position: Cesium.Cartesian3.fromDegrees(...coordinates),
+            point: this.customStyle.pointStyle,
+            parent: this.parent,
+            featureType: this.constants.geojsonTypes.POINT,
+            lng: coordinates[0],
+            lat: coordinates[1],
+            currentVertexPosition: this.currentVertexPosition,
+        });
+    }
+
+    addLine() {
+        this.viewer.entities.add({
+            name: 'Draw Line',
+            type: 'cesium-draw',
+            polyline: {
+                ...this.customStyle.lineStyle,
+                // positions: Cesium.Cartesian3.fromDegreesArray([...startPosition, ...endPosition]),
+                positions: new Cesium.CallbackProperty(
+                    () => Cesium.Cartesian3.fromDegreesArray(this.drawStep.flat()),
+                    false
+                ),
+            },
+            parent: this.parent,
+            featureType: this.constants.geojsonTypes.LINE_STRING,
+        });
     }
 }
 

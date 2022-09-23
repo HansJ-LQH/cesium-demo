@@ -2,7 +2,7 @@
 import ModeBase from './ModeBase';
 import { getLngLat } from '../sdkRelative/utils';
 
-class DrawPoint extends ModeBase {
+class DrawLineString extends ModeBase {
     constructor(mapDraw) {
         super(mapDraw);
         this.modeName = 'draw_point';
@@ -12,31 +12,43 @@ class DrawPoint extends ModeBase {
     onSetup() {
         this.changeCursor('crosshair');
         this.feature = {
-            drawType: this.constants.modes.DRAW_POINT,
-            geojsonType: this.constants.geojsonTypes.POINT,
+            drawType: this.constants.modes.DRAW_LINE_STRING,
+            geojsonType: this.constants.geojsonTypes.LINE_STRING,
             coordinates: [],
-            drawStep: [],
+            drawStep: this.drawStep,
             customStyle: {},
         };
     }
 
     onClick(e) {
         const lngLat = getLngLat(e.position);
-        this.addFeature(lngLat);
+        this.drawStep.push(lngLat);
+        this.addPoint(lngLat);
+        if (this.currentVertexPosition > 0) {
+            this.addLine();
+        }
+        this.currentVertexPosition += 1;
+    }
+
+    onRightClick() {
+        this.addFeature();
         this.onStop();
     }
 
-    addFeature(coordinates) {
-        this.addPoint(coordinates);
+    getCoordinates() {
+        return this.drawStep;
+    }
+
+    addFeature() {
         this.parent.feature = {
             ...this.feature,
-            coordinates,
+            coordinates: this.getCoordinates(),
             id: this.parent.id,
-            drawStep: [coordinates],
+            drawStep: this.drawStep,
             ctx: this,
         };
         this.symbolPublisher.symbolAdded(this.parent);
     }
 }
 
-export default DrawPoint;
+export default DrawLineString;

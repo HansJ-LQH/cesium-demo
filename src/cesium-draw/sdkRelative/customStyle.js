@@ -3,6 +3,7 @@ export const pointStyle = {
     color: Cesium.Color.GREEN,
     outlineColor: Cesium.Color.WHITE,
     outlineWidth: 3,
+    eyeOffset: new Cesium.Cartesian3(0, 0, -10),
 };
 
 export const pointSelectStyle = {
@@ -10,8 +11,9 @@ export const pointSelectStyle = {
 };
 
 export const lineStyle = {
-    pixelSize: 5,
-    color: Cesium.Color.GREEN,
+    width: 5,
+    material: Cesium.Color.GREEN,
     outlineColor: Cesium.Color.WHITE,
     outlineWidth: 2,
+    eyeOffset: new Cesium.Cartesian3(0, 0, -8),
 };

@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 import simple_select from './simple_select';
 import draw_point from './draw_point';
+import draw_line_string from './draw_line_string';
 // import direct_select from './direct_select';
 // import draw_polygon from './draw_polygon';
-// import draw_line_string from './draw_line_string';
 // import draw_circle from './draw_circle';
 // import draw_rectangle from './draw_rectangle';
 // import draw_marker from './draw_marker';
@@ -21,9 +21,9 @@ import draw_point from './draw_point';
 export default {
     simple_select,
     draw_point,
+    draw_line_string,
     // direct_select,
     // draw_polygon,
-    // draw_line_string,
     // draw_circle,
     // draw_rectangle,
     // draw_marker,

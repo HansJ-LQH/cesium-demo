@@ -3,10 +3,11 @@ import ModeBase from './ModeBase';
 import symbolPublisher from '../sdkRelative/symbolPublisher';
 import {
     getCesiumEntity,
-    getLngLatDifference,
+    getPositionDifference,
     changeEntityStyle,
     moveFeature,
     updateFeature,
+    getCesiumLngLag,
 } from '../sdkRelative/utils';
 
 class SimpleSelect extends ModeBase {
@@ -16,6 +17,7 @@ class SimpleSelect extends ModeBase {
         this.isSelect = false;
         this.isEdit = false;
         this.currentSelectFeature = null;
+        this.currentSelectVertex = null;
         this.lastSelectFeature = null;
     }
 
@@ -29,6 +31,7 @@ class SimpleSelect extends ModeBase {
             symbolPublisher.symbolSelected(entity.id.parent);
             this.changeCursor('move');
             changeEntityStyle(this.currentSelectFeature, this.isSelect);
+            this.currentSelectVertex = entity?.id;
             this.currentSelectFeature = entity?.id?.parent;
         } else {
             changeEntityStyle(this.lastSelectFeature, this.isSelect);
@@ -52,14 +55,13 @@ class SimpleSelect extends ModeBase {
         if (this.isSelect) this.changeCursor(entity.id ? 'move' : 'default');
         else this.changeCursor(entity.id ? 'pointer' : 'default');
         if (this.isEdit) {
-            const difference = getLngLatDifference(e.startPosition, e.endPosition);
-            moveFeature(this.currentSelectFeature, e.endPosition);
+            moveFeature(e.endPosition, this.currentSelectFeature, this.currentSelectVertex);
         }
     }
 
     onMouseUp(e) {
         if (this.isEdit) {
-            moveFeature(this.currentSelectFeature, e.position);
+            moveFeature(e.position, this.currentSelectFeature, this.currentSelectVertex);
             updateFeature(this.currentSelectFeature, e.position);
             this.mapControllerEnable(true);
             this.isEdit = false;
